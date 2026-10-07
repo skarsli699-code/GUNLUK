@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Günlük">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<title>Günlük</title>
+<style>
+:root{--bg:#f5f7fb;--card:#fff;--text:#111827;--muted:#6b7280;--line:#e5e7eb;--green:#16a34a;--red:#ef4444;--amber:#d97706}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}body{padding-bottom:92px}
+.app{max-width:640px;margin:auto;padding:env(safe-area-inset-top) 14px 24px}.top{padding:18px 4px 8px;display:flex;justify-content:space-between;align-items:center}.title{font-size:28px;font-weight:800}.date{font-size:13px;color:var(--muted);font-weight:600}
+.card,.task,.habit{background:#fff;border:1px solid var(--line);border-radius:18px}.card{padding:14px}.quick{display:flex;gap:8px}.quick input{flex:1;border:0;background:#f3f4f6;border-radius:14px;padding:15px;font-size:16px;outline:none}.plus{width:52px;border:0;border-radius:14px;background:#111827;color:white;font-size:28px}
+.sec{margin-top:18px}.head{display:flex;justify-content:space-between;margin:0 3px 9px}.head h2{font-size:15px;margin:0}.count{font-size:12px;color:var(--muted)}
+.task{display:flex;gap:10px;align-items:center;padding:12px;margin-bottom:8px}.task.urgent{border-color:#fecaca;background:#fffafa}.task.done{opacity:.5}.main{flex:1;min-width:0}.name{font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.meta{font-size:11px;color:var(--muted);margin-top:3px}
+.ib,.ck{border:0;width:38px;height:38px;border-radius:12px;font-size:17px}.ib{background:#f3f4f6}.ib.active{background:#fee2e2}.ck{background:#ecfdf5;color:var(--green);font-size:20px;font-weight:900}.empty{text-align:center;color:var(--muted);padding:20px;font-size:14px}
+.habit{padding:12px;margin-bottom:9px}.habit b{display:block;margin-bottom:10px}.row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px}.status{border:1px solid var(--line);background:#f9fafb;border-radius:11px;padding:10px 4px;font-size:12px;font-weight:800}.good.sel{background:#dcfce7;border-color:#86efac}.half.sel{background:#fef3c7;border-color:#fcd34d}.bad.sel{background:#fee2e2;border-color:#fca5a5}
+.barbg{height:10px;background:#e5e7eb;border-radius:99px;overflow:hidden}.bar{height:100%;background:#111827}.bartext{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:6px}
+.monthnav{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.monthnav button{border:0;background:#f3f4f6;width:38px;height:38px;border-radius:11px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}.stat{background:#f9fafb;border:1px solid var(--line);border-radius:14px;padding:12px;text-align:center}.stat strong{display:block;font-size:22px}.stat span{font-size:11px;color:var(--muted)}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}.dow{text-align:center;font-size:10px;color:var(--muted);font-weight:800}.day{aspect-ratio:1;border:0;border-radius:12px;background:#f3f4f6;font-weight:800}.day.good{background:#dcfce7}.day.half{background:#fef3c7}.day.bad{background:#fee2e2}.day.today{outline:2px solid #111827}.blank{background:transparent}
+.nav{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.94);backdrop-filter:blur(16px);border-top:1px solid var(--line);padding:8px 10px calc(8px + env(safe-area-inset-bottom));display:flex;justify-content:center}.navin{display:grid;grid-template-columns:repeat(4,1fr);max-width:640px;width:100%}.nb{border:0;background:none;color:var(--muted);font-size:10px;font-weight:800;padding:7px}.nb b{display:block;font-size:21px}.nb.active{color:var(--text)}.view{display:none}.view.active{display:block}
+.primary{width:100%;border:0;border-radius:14px;background:#111827;color:#fff;padding:14px;font-weight:900}.settings button{width:100%;border:1px solid var(--line);background:#fff;border-radius:14px;padding:13px;margin-bottom:8px;text-align:left;font-weight:800}.note{font-size:12px;color:var(--muted);line-height:1.5}
+.modal{position:fixed;inset:0;background:#0007;display:none;align-items:flex-end;justify-content:center;z-index:30}.modal.open{display:flex}.sheet{width:100%;max-width:640px;background:#fff;border-radius:24px 24px 0 0;padding:18px 16px calc(22px + env(safe-area-inset-bottom))}.sheet input{width:100%;border:1px solid var(--line);border-radius:13px;padding:13px;margin:8px 0 10px}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="top"><div><div class="title" id="title">Bugün</div><div class="date" id="date"></div></div><button class="ib" id="gear">⚙️</button></div>
+
+<section id="todayView" class="view active">
+<div class="card"><div class="quick"><input id="taskInput" placeholder="Şimdi ne yapacaksın?"><button class="plus" id="addTask">+</button></div></div>
+<div class="sec"><div class="head"><h2>🔴 Acil</h2><span class="count" id="c1"></span></div><div id="urgent"></div></div>
+<div class="sec"><div class="head"><h2>Bekleyen</h2><span class="count" id="c2"></span></div><div id="normal"></div></div>
+<div class="sec"><div class="head"><h2>Tamamlanan</h2><span class="count" id="c3"></span></div><div id="done"></div></div>
+</section>
+
+<section id="habitsView" class="view">
+<div class="card" style="margin-bottom:14px"><div class="barbg"><div class="bar" id="bar" style="width:0%"></div></div><div class="bartext"><span>Bugünkü performans</span><b id="score">%0</b></div></div>
+<div id="habits"></div><button class="primary" id="addHabit">+ Sabit görev ekle</button>
+</section>
+
+<section id="overviewView" class="view">
+<div class="card"><div class="monthnav"><button id="prev">‹</button><b id="month"></b><button id="next">›</button></div>
+<div class="stats"><div class="stat"><strong id="avg">0%</strong><span>Ortalama</span></div><div class="stat"><strong id="gooddays">0</strong><span>İyi gün</span></div><div class="stat"><strong id="tracked">0</strong><span>Kayıtlı gün</span></div></div>
+<div class="cal" id="cal"></div></div>
+</section>
+
+<section id="settingsView" class="view">
+<div class="card settings"><button id="export">📤 Yedek al</button><button id="import">📥 Yedekten geri yükle</button><button id="reset" style="color:#b91c1c">🗑️ Tüm verileri sil</button><input hidden type="file" id="file" accept="application/json"><p class="note">Veriler Safari içinde saklanır. Telefon değiştirirken veya Safari verilerini temizlemeden önce yedek al.</p></div>
+</section>
+</div>
+
+<nav class="nav"><div class="navin">
+<button class="nb active" data-v="today"><b>✓</b>Bugün</button>
+<button class="nb" data-v="habits"><b>◉</b>90 Gün</button>
+<button class="nb" data-v="overview"><b>▦</b>Genel Bakış</button>
+<button class="nb" data-v="settings"><b>⚙︎</b>Ayarlar</button>
+</div></nav>
+
+<div class="modal" id="modal"><div class="sheet"><h3>Sabit görev ekle</h3><input id="habitName" placeholder="Örn. Spor"><button class="primary" id="saveHabit">Ekle</button></div></div>
+
+<script>
+const KEY='gunluk-v1';
+const D={tasks:[],habits:[{id:'h1',name:'Diş fırçala'},{id:'h2',name:'Spor / hareket'},{id:'h3',name:'20 dk öğrenme'}],habitLog:{},programStart:new Date().toISOString().slice(0,10)};
+let data=(()=>{try{return {...D,...JSON.parse(localStorage.getItem(KEY)||'{}')}}catch{return structuredClone(D)}})();
+let cursor=new Date();
+const save=()=>localStorage.setItem(KEY,JSON.stringify(data));
+const uid=()=>Math.random().toString(36).slice(2)+Date.now().toString(36);
+const key=(d=new Date())=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+date.textContent=new Intl.DateTimeFormat('tr-TR',{weekday:'long',day:'numeric',month:'long'}).format(new Date());
+
+function addTask(){let n=taskInput.value.trim();if(!n)return;data.tasks.unshift({id:uid(),name:n,urgent:false,done:false,createdAt:Date.now()});taskInput.value='';save();renderTasks()}
+addTaskBtn=document.getElementById('addTask');addTaskBtn.onclick=addTask;taskInput.onkeydown=e=>{if(e.key==='Enter')addTask()};
+
+function taskHTML(t){let tm=new Date(t.createdAt).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});return `<div class="task ${t.urgent?'urgent':''} ${t.done?'done':''}"><button class="ib ${t.urgent?'active':''}" onclick="urg('${t.id}')">!</button><div class="main"><div class="name">${esc(t.name)}</div><div class="meta">${tm}</div></div><button class="ck" onclick="doneTask('${t.id}')">${t.done?'↶':'✓'}</button></div>`}
+function list(id,a){document.getElementById(id).innerHTML=a.length?a.map(taskHTML).join(''):'<div class="empty">Henüz görev yok.</div>'}
+function renderTasks(){let o=data.tasks.filter(x=>!x.done),u=o.filter(x=>x.urgent),n=o.filter(x=>!x.urgent),d=data.tasks.filter(x=>x.done).slice(0,20);list('urgent',u);list('normal',n);list('done',d);c1.textContent=u.length?u.length+' görev':'';c2.textContent=n.length?n.length+' görev':'';c3.textContent=d.length?d.length+' görev':''}
+window.urg=id=>{let t=data.tasks.find(x=>x.id===id);t.urgent=!t.urgent;save();renderTasks()}
+window.doneTask=id=>{let t=data.tasks.find(x=>x.id===id);t.done=!t.done;if(t.done)t.urgent=false;save();renderTasks()}
+
+function scoreDay(k){if(!data.habits.length)return 0;let l=data.habitLog[k]||{},tot=0,touched=0;data.habits.forEach(h=>{let s=l[h.id];if(!s)return;touched++;tot+=s==='good'?100:s==='half'?50:0});return touched?tot/data.habits.length:0}
+function trackedDay(k){return Object.values(data.habitLog[k]||{}).some(Boolean)}
+function renderHabits(){let k=key(),l=data.habitLog[k]||{};habits.innerHTML=data.habits.map(h=>{let s=l[h.id]||'';return `<div class="habit"><b>${esc(h.name)}</b><div class="row"><button class="status good ${s==='good'?'sel':''}" onclick="setHabit('${h.id}','good')">✓ Yaptım</button><button class="status half ${s==='half'?'sel':''}" onclick="setHabit('${h.id}','half')">◐ Yarım</button><button class="status bad ${s==='bad'?'sel':''}" onclick="setHabit('${h.id}','bad')">✕ Yapmadım</button></div></div>`}).join('');let s=scoreDay(k);bar.style.width=s+'%';score.textContent='%'+Math.round(s)}
+window.setHabit=(id,s)=>{let k=key();data.habitLog[k]=data.habitLog[k]||{};data.habitLog[k][id]=data.habitLog[k][id]===s?'':s;save();renderHabits();renderOverview()}
+addHabit.onclick=()=>modal.classList.add('open');modal.onclick=e=>{if(e.target===modal)modal.classList.remove('open')};saveHabit.onclick=()=>{let n=habitName.value.trim();if(!n)return;data.habits.push({id:uid(),name:n});habitName.value='';save();modal.classList.remove('open');renderHabits();renderOverview()}
+
+function renderOverview(){let y=cursor.getFullYear(),m=cursor.getMonth(),first=new Date(y,m,1),days=new Date(y,m+1,0).getDate(),off=(first.getDay()+6)%7;month.textContent=new Intl.DateTimeFormat('tr-TR',{month:'long',year:'numeric'}).format(cursor);let h=['Pzt','Sal','Çar','Per','Cum','Cmt','Paz'].map(x=>`<div class="dow">${x}</div>`).join('');for(let i=0;i<off;i++)h+='<div class="day blank"></div>';let scores=[],g=0,tr=0;for(let d=1;d<=days;d++){let dt=new Date(y,m,d),k=key(dt),tk=trackedDay(k),s=scoreDay(k),cl='';if(tk){tr++;scores.push(s);if(s>=75){cl='good';g++}else if(s>=40)cl='half';else cl='bad'}if(k===key())cl+=' today';h+=`<button class="day ${cl}" onclick="showDay('${k}')">${d}</button>`}cal.innerHTML=h;let a=scores.length?scores.reduce((x,y)=>x+y,0)/scores.length:0;avg.textContent=Math.round(a)+'%';gooddays.textContent=g;tracked.textContent=tr}
+window.showDay=k=>{let l=data.habitLog[k]||{},dt=new Date(k+'T12:00:00'),lines=data.habits.map(h=>`${l[h.id]==='good'?'✓':l[h.id]==='half'?'◐':l[h.id]==='bad'?'✕':'–'} ${h.name}`).join('\n');alert(new Intl.DateTimeFormat('tr-TR',{day:'numeric',month:'long',year:'numeric'}).format(dt)+'\n\n'+lines)}
+prev.onclick=()=>{cursor=new Date(cursor.getFullYear(),cursor.getMonth()-1,1);renderOverview()};next.onclick=()=>{cursor=new Date(cursor.getFullYear(),cursor.getMonth()+1,1);renderOverview()}
+
+const titles={today:'Bugün',habits:'90 Gün',overview:'Genel Bakış',settings:'Ayarlar'};
+function go(v){document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));document.getElementById(v+'View').classList.add('active');document.querySelectorAll('.nb').forEach(x=>x.classList.toggle('active',x.dataset.v===v));title.textContent=titles[v];gear.style.visibility=v==='settings'?'hidden':'visible';if(v==='habits')renderHabits();if(v==='overview')renderOverview();scrollTo({top:0,behavior:'smooth'})}
+document.querySelectorAll('.nb').forEach(b=>b.onclick=()=>go(b.dataset.v));gear.onclick=()=>go('settings');
+
+export.onclick=()=>{let b=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download='gunluk-yedek-'+key()+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)}
+import.onclick=()=>file.click();file.onchange=async e=>{let f=e.target.files[0];if(!f)return;try{let o=JSON.parse(await f.text());if(!o.tasks||!o.habits||!o.habitLog)throw 0;data=o;save();renderTasks();renderHabits();renderOverview();alert('Yedek geri yüklendi.')}catch{alert('Geçerli bir Günlük yedeği değil.')}e.target.value=''}
+reset.onclick=()=>{if(confirm('Tüm kayıtlar silinsin mi?')){data=structuredClone(D);save();renderTasks();renderHabits();renderOverview();go('today')}}
+
+renderTasks();renderHabits();renderOverview();
+if('serviceWorker'in navigator)addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+</script>
+</body>
+</html>
