@@ -97,8 +97,8 @@ const titles={today:'Bugün',habits:'90 Gün',overview:'Genel Bakış',settings:
 function go(v){document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));document.getElementById(v+'View').classList.add('active');document.querySelectorAll('.nb').forEach(x=>x.classList.toggle('active',x.dataset.v===v));title.textContent=titles[v];gear.style.visibility=v==='settings'?'hidden':'visible';if(v==='habits')renderHabits();if(v==='overview')renderOverview();scrollTo({top:0,behavior:'smooth'})}
 document.querySelectorAll('.nb').forEach(b=>b.onclick=()=>go(b.dataset.v));gear.onclick=()=>go('settings');
 
-export.onclick=()=>{let b=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download='gunluk-yedek-'+key()+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)}
-import.onclick=()=>file.click();file.onchange=async e=>{let f=e.target.files[0];if(!f)return;try{let o=JSON.parse(await f.text());if(!o.tasks||!o.habits||!o.habitLog)throw 0;data=o;save();renderTasks();renderHabits();renderOverview();alert('Yedek geri yüklendi.')}catch{alert('Geçerli bir Günlük yedeği değil.')}e.target.value=''}
+document.getElementById('export').onclick=()=>{let b=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download='gunluk-yedek-'+key()+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)}
+document.getElementById('import').onclick=()=>file.click();file.onchange=async e=>{let f=e.target.files[0];if(!f)return;try{let o=JSON.parse(await f.text());if(!o.tasks||!o.habits||!o.habitLog)throw 0;data=o;save();renderTasks();renderHabits();renderOverview();alert('Yedek geri yüklendi.')}catch{alert('Geçerli bir Günlük yedeği değil.')}e.target.value=''}
 reset.onclick=()=>{if(confirm('Tüm kayıtlar silinsin mi?')){data=structuredClone(D);save();renderTasks();renderHabits();renderOverview();go('today')}}
 
 renderTasks();renderHabits();renderOverview();
